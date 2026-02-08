@@ -1,0 +1,216 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 210 20% 98%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 213 94% 20%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 187 72% 36%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 210 20% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 199 89% 48%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --warning: 25 95% 53%;
+    --warning-foreground: 0 0% 100%;
+    
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    
+    --water: 199 89% 48%;
+    --water-light: 199 89% 70%;
+    --water-dark: 199 89% 30%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 213 94% 20%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 213 94% 15%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 199 89% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 213 94% 22%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 213 50% 25%;
+    --sidebar-ring: 199 89% 48%;
+    
+    --panel-background: 0 0% 100%;
+    --panel-header: 213 94% 15%;
+  }
+
+  .dark {
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 199 89% 48%;
+    --primary-foreground: 222 47% 11%;
+
+    --secondary: 187 72% 36%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 199 89% 48%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --warning: 25 95% 53%;
+    --warning-foreground: 0 0% 100%;
+    
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    
+    --water: 199 89% 48%;
+    --water-light: 199 89% 60%;
+    --water-dark: 199 89% 35%;
+
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 199 89% 48%;
+    
+    --sidebar-background: 222 47% 8%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 199 89% 48%;
+    --sidebar-primary-foreground: 222 47% 11%;
+    --sidebar-accent: 222 47% 14%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217 33% 17%;
+    --sidebar-ring: 199 89% 48%;
+    
+    --panel-background: 222 47% 9%;
+    --panel-header: 222 47% 11%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-white/90 dark:bg-card/90 backdrop-blur-md;
+  }
+  
+  .stat-card {
+    @apply rounded-xl p-4 shadow-sm border border-sidebar-border/50 bg-sidebar-accent/30 
+           transition-all duration-300 hover:bg-sidebar-accent/50 hover:shadow-md;
+  }
+  
+  .filter-btn {
+    @apply px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
+           bg-sidebar-accent/50 text-sidebar-foreground hover:bg-sidebar-primary/20
+           border border-transparent;
+  }
+  
+  .filter-btn-active {
+    @apply bg-sidebar-primary text-sidebar-primary-foreground border-sidebar-primary
+           shadow-lg shadow-sidebar-primary/30;
+  }
+  
+  .water-shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--water-light)) 0%,
+      hsl(var(--water)) 50%,
+      hsl(var(--water-light)) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s ease-in-out infinite;
+  }
+  
+  .panel-header-gradient {
+    background: linear-gradient(135deg, hsl(var(--panel-header)) 0%, hsl(var(--primary)) 100%);
+  }
+}
+
+@layer utilities {
+  .text-gradient-water {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(var(--water)) 0%, hsl(var(--secondary)) 100%);
+  }
+  
+  .shadow-glow {
+    box-shadow: 0 0 20px hsl(var(--water) / 0.3), 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  }
+  
+  .shadow-glow-critical {
+    box-shadow: 0 0 20px hsl(var(--destructive) / 0.3), 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  }
+}
+
+@keyframes shimmer {
+  0%, 100% { background-position: 200% 0; }
+  50% { background-position: 0% 0; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px hsl(var(--water) / 0.5); }
+  50% { box-shadow: 0 0 20px hsl(var(--water) / 0.8); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Leaflet overrides */
+.leaflet-container {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  z-index: 0;
+}
+
+.leaflet-popup-content-wrapper {
+  @apply rounded-xl shadow-lg border border-border/50 !important;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+}
+
+.custom-marker {
+  @apply flex items-center justify-center rounded-full border-2 border-white shadow-lg;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.custom-marker:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 20px hsl(var(--water) / 0.6);
+}
