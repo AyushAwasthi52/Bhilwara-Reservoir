@@ -1,0 +1,99 @@
+[
+  {
+    "id": "meja-dam",
+    "name": "Meja Dam",
+    "type": "dam",
+    "latitude": 25.4256,
+    "longitude": 74.5821,
+    "description": "Major irrigation dam serving Bhilwara district. Constructed in 1968, this dam plays a crucial role in water management and agricultural irrigation for the region."
+  },
+  {
+    "id": "khari-dam",
+    "name": "Khari Dam",
+    "type": "dam",
+    "latitude": 25.5123,
+    "longitude": 74.7234,
+    "description": "Secondary irrigation reservoir built in 1975. This dam provides water for agricultural purposes and helps in maintaining the water table in the surrounding areas."
+  },
+  {
+    "id": "mandalgarh-lake",
+    "name": "Mandalgarh Lake",
+    "type": "lake",
+    "latitude": 25.4432,
+    "longitude": 75.0156,
+    "description": "Natural lake with historical significance. This beautiful water body has been a source of water for the local community for centuries and holds cultural importance in the region."
+  },
+  {
+    "id": "kotri-dam",
+    "name": "Kotri Dam",
+    "type": "dam",
+    "latitude": 25.1567,
+    "longitude": 74.8432,
+    "description": "Primary water supply dam for southern Bhilwara. Constructed in 1982, this dam is essential for providing drinking water and irrigation to the southern regions of the district."
+  },
+  {
+    "id": "sareri-check-dam",
+    "name": "Sareri Check Dam",
+    "type": "pond",
+    "latitude": 25.6234,
+    "longitude": 74.6543,
+    "description": "Rainwater harvesting structure built in 2005. This check dam helps in water conservation and recharging groundwater levels in the area."
+  },
+  {
+    "id": "badnor-lake",
+    "name": "Badnor Lake",
+    "type": "lake",
+    "latitude": 25.3678,
+    "longitude": 74.4521,
+    "description": "Seasonal lake with agricultural importance. This water body fills during monsoon season and provides water for farming activities in the surrounding agricultural lands."
+  },
+  {
+    "id": "raipur-dam",
+    "name": "Raipur Dam",
+    "type": "dam",
+    "latitude": 25.2845,
+    "longitude": 74.9876,
+    "description": "Medium irrigation project constructed in 1990. This dam supports local agriculture and helps in maintaining water availability throughout the year."
+  },
+  {
+    "id": "gangapur-check-dam",
+    "name": "Gangapur Check Dam",
+    "type": "pond",
+    "latitude": 25.5567,
+    "longitude": 74.8123,
+    "description": "Small water harvesting structure built in 2010. This check dam is part of the water conservation efforts in the region and helps in groundwater recharge."
+  },
+  {
+    "id": "jahazpur-reservoir",
+    "name": "Jahazpur Reservoir",
+    "type": "dam",
+    "latitude": 25.6123,
+    "longitude": 75.1234,
+    "description": "Eastern district water supply reservoir constructed in 1988. This reservoir is crucial for providing water to the eastern parts of Bhilwara district."
+  },
+  {
+    "id": "asind-lake",
+    "name": "Asind Lake of here",
+    "type": "lake",
+    "latitude": 25.604748854851223,
+    "longitude": 74.3539911075349,
+    "description": "Major natural water body in northern region. This lake is an important source of water for both agricultural and domestic use in the northern areas of the district."
+  },
+  {
+    "id": "banas-river",
+    "name": "Banas River",
+    "type": "river",
+    "latitude": 25.4449,
+    "longitude": 74.6351,
+    "description": "Major river flowing through Bhilwara district. The Banas River is a significant water source and plays a vital role in the region's ecosystem and water supply."
+  },
+  {
+    "id": "berach-river",
+    "name": "Berach River",
+    "type": "river",
+    "latitude": 25.5234,
+    "longitude": 74.7123,
+    "description": "Important tributary river in the region. The Berach River contributes to the water resources and supports various water bodies and irrigation systems in the area."
+  }
+]
+

@@ -1,25 +1,56 @@
- import { useState } from 'react';
- import { ChevronLeft, ChevronRight, Waves, Droplets, AlertTriangle, Database, Filter } from 'lucide-react';
- import { motion, AnimatePresence } from 'framer-motion';
- import { Button } from '@/components/ui/button';
- import { StatCard } from './StatCard';
- import { getStatistics, ReservoirType } from '@/data/reservoirs';
+import { useState, useEffect } from 'react';
+import { ChevronLeft, ChevronRight, Waves, Droplets, Database, Filter } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { StatCard } from './StatCard';
+import { WaterBody, WaterBodyType, loadWaterBodies } from '@/data/coordinates';
+
+interface LeftSidebarProps {
+  activeFilter: WaterBodyType | 'All';
+  onFilterChange: (filter: WaterBodyType | 'All') => void;
+}
  
- interface LeftSidebarProps {
-   activeFilter: ReservoirType | 'All';
-   onFilterChange: (filter: ReservoirType | 'All') => void;
- }
- 
- export const LeftSidebar = ({ activeFilter, onFilterChange }: LeftSidebarProps) => {
-   const [isCollapsed, setIsCollapsed] = useState(false);
-   const stats = getStatistics();
- 
-   const filters: { label: string; value: ReservoirType | 'All'; icon: typeof Waves }[] = [
-     { label: 'All Reservoirs', value: 'All', icon: Database },
-     { label: 'Dams', value: 'Dam', icon: Waves },
-     { label: 'Lakes', value: 'Lake', icon: Droplets },
-     { label: 'Check Dams', value: 'Check Dam', icon: Filter },
-   ];
+export const LeftSidebar = ({ activeFilter, onFilterChange }: LeftSidebarProps) => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [waterBodies, setWaterBodies] = useState<WaterBody[]>([]);
+
+  // Load water bodies data dynamically
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Always force reload to bypass cache
+        const data = await loadWaterBodies(true);
+        if (data.length > 0) {
+          setWaterBodies(data);
+        }
+      } catch (error) {
+        console.error('Error loading water bodies:', error);
+      }
+    };
+
+    fetchData();
+
+    // Poll for changes every 1 second
+    const interval = setInterval(() => {
+      fetchData();
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+  
+  const totalWaterBodies = waterBodies.length;
+  const damsCount = waterBodies.filter(wb => wb.type === 'dam').length;
+  const lakesCount = waterBodies.filter(wb => wb.type === 'lake').length;
+  const pondsCount = waterBodies.filter(wb => wb.type === 'pond').length;
+  const riversCount = waterBodies.filter(wb => wb.type === 'river').length;
+
+  const filters: { label: string; value: WaterBodyType | 'All'; icon: typeof Waves }[] = [
+    { label: 'All Water Bodies', value: 'All', icon: Database },
+    { label: 'Dams', value: 'dam', icon: Waves },
+    { label: 'Lakes', value: 'lake', icon: Droplets },
+    { label: 'Ponds', value: 'pond', icon: Filter },
+    { label: 'Rivers', value: 'river', icon: Droplets },
+  ];
  
    return (
      <motion.aside
@@ -79,32 +110,30 @@
                  <h3 className="text-xs uppercase tracking-wider text-sidebar-foreground/50 mb-3 font-semibold">
                    Quick Statistics
                  </h3>
-                 <div className="space-y-3">
-                   <StatCard
-                     title="Total Reservoirs"
-                     value={stats.totalReservoirs}
-                     icon={Database}
-                   />
-                   <StatCard
-                     title="Total Capacity"
-                     value={`${stats.totalCapacity} MCM`}
-                     subtitle="Million Cubic Meters"
-                     icon={Waves}
-                   />
-                   <StatCard
-                     title="Avg. Water Level"
-                     value={`${stats.avgWaterLevel}%`}
-                     icon={Droplets}
-                     variant="success"
-                   />
-                   <StatCard
-                     title="Critical Bodies"
-                     value={stats.criticalCount}
-                     subtitle={`${stats.lowCount} low, ${stats.normalCount} normal`}
-                     icon={AlertTriangle}
-                     variant={stats.criticalCount > 0 ? 'critical' : 'default'}
-                   />
-                 </div>
+                <div className="space-y-3">
+                  <StatCard
+                    title="Total Water Bodies"
+                    value={totalWaterBodies}
+                    icon={Database}
+                  />
+                  <StatCard
+                    title="Dams"
+                    value={damsCount}
+                    icon={Waves}
+                  />
+                  <StatCard
+                    title="Lakes"
+                    value={lakesCount}
+                    icon={Droplets}
+                    variant="success"
+                  />
+                  <StatCard
+                    title="Ponds & Rivers"
+                    value={pondsCount + riversCount}
+                    subtitle={`${pondsCount} ponds, ${riversCount} rivers`}
+                    icon={Filter}
+                  />
+                </div>
                </div>
              </motion.div>
            )}
