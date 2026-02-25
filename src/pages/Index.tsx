@@ -2,16 +2,16 @@ import { useState } from 'react';
 import { TopNav } from '@/components/dashboard/TopNav';
 import { LeftSidebar } from '@/components/dashboard/LeftSidebar';
 import { MapView } from '@/components/dashboard/MapView';
-import { ReservoirPanel } from '@/components/dashboard/ReservoirPanel';
-import { Reservoir, ReservoirType } from '@/data/reservoirs';
+import { WaterBodyPanel } from '@/components/dashboard/WaterBodyPanel';
+import { WaterBody, WaterBodyType } from '@/data/coordinates';
 
 const Index = () => {
-  const [activeFilter, setActiveFilter] = useState<ReservoirType | 'All'>('All');
-  const [selectedReservoir, setSelectedReservoir] = useState<Reservoir | null>(null);
+  const [activeFilter, setActiveFilter] = useState<WaterBodyType | 'All'>('All');
+  const [selectedWaterBody, setSelectedWaterBody] = useState<WaterBody | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
-  const handleReservoirClick = (reservoir: Reservoir) => {
-    setSelectedReservoir(reservoir);
+  const handleWaterBodyClick = (waterBody: WaterBody) => {
+    setSelectedWaterBody(waterBody);
     setIsPanelOpen(true);
   };
 
@@ -32,13 +32,13 @@ const Index = () => {
         <main className="flex-1 relative">
           <MapView 
             activeFilter={activeFilter} 
-            onReservoirClick={handleReservoirClick} 
+            onWaterBodyClick={handleWaterBodyClick} 
           />
         </main>
       </div>
 
-      <ReservoirPanel
-        reservoir={selectedReservoir}
+      <WaterBodyPanel
+        waterBody={selectedWaterBody}
         isOpen={isPanelOpen}
         onClose={handleClosePanel}
       />

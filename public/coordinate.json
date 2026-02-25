@@ -1,0 +1,35 @@
+[
+  {
+    "id": "mandal-pond",
+    "name": "Mandal Pond",
+    "type": "pond",
+    "latitude": 25.454,
+    "longitude": 74.559,
+    "description": "Pond Hai"
+  },
+  {
+    "id": "old-maleshwar-mandir",
+    "name": "Old Maleshwar Mandir Jalashay",
+    "type": "jalashay",
+    "latitude": 25.441,
+    "longitude": 74.901,
+    "description": "Mandir Hai"
+  },
+  {
+    "id": "nawal-pura",
+    "name": "Nawal Pura",
+    "type": "lake",
+    "latitude": 25.308,
+    "longitude": 74.980,
+    "description": "Pta nahi kya hai"
+  },
+  {
+    "id": "guwardi-bandh",
+    "name": "Guwardi Bandh",
+    "type": "dam",
+    "latitude": 25.256,
+    "longitude": 74.619,
+    "description": "Bandh hai"
+  }
+]
+

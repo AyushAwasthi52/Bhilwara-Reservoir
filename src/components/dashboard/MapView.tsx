@@ -1,26 +1,28 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import L from "leaflet";
 import { motion } from "framer-motion";
-import { Reservoir, reservoirs, ReservoirType } from "@/data/reservoirs";
-import { Satellite, Map as MapIcon } from "lucide-react";
+import { WaterBody, WaterBodyType, getWaterBodiesByType, loadWaterBodies } from "@/data/coordinates";
+import { Satellite, Map as MapIcon, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import "leaflet/dist/leaflet.css";
 
-// Custom marker icons based on status
-const createCustomIcon = (status: string, type: ReservoirType) => {
-  const colors = {
-    Normal: "#22c55e",
-    Low: "#f97316",
-    Critical: "#ef4444",
+// Custom marker icons based on type
+const createCustomIcon = (type: WaterBodyType) => {
+  const typeColors = {
+    dam: "#3b82f6",
+    lake: "#22c55e",
+    pond: "#10b981",
+    river: "#06b6d4",
   };
 
   const typeEmojis = {
-    Dam: "🏗️",
-    Lake: "💧",
-    "Check Dam": "🔲",
+    dam: "🏗️",
+    lake: "💧",
+    pond: "🔲",
+    river: "🌊",
   };
 
-  const color = colors[status as keyof typeof colors] || colors.Normal;
+  const color = typeColors[type] || typeColors.lake;
 
   return L.divIcon({
     className: "custom-marker-container",
@@ -48,42 +50,52 @@ const createCustomIcon = (status: string, type: ReservoirType) => {
   });
 };
 
-const createPopupContent = (reservoir: Reservoir) => {
-  const statusColors = {
-    Normal: "#22c55e",
-    Low: "#f97316",
-    Critical: "#ef4444",
+const createPopupContent = (waterBody: WaterBody) => {
+  const typeColors = {
+    dam: "#3b82f6",
+    lake: "#22c55e",
+    pond: "#10b981",
+    river: "#06b6d4",
   };
 
+  const color = typeColors[waterBody.type] || typeColors.lake;
+  const typeLabel = waterBody.type.charAt(0).toUpperCase() + waterBody.type.slice(1);
+
   return `
-    <div style="padding: 8px; min-width: 180px; font-family: Inter, system-ui, sans-serif;">
-      <h3 style="font-weight: 700; font-size: 14px; margin-bottom: 4px;">${reservoir.name}</h3>
-      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+    <div style="padding: 12px; min-width: 250px; max-width: 300px; font-family: Inter, system-ui, sans-serif;">
+      <h3 style="font-weight: 700; font-size: 16px; margin-bottom: 8px; color: #1f2937;">${waterBody.name}</h3>
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
         <span style="
-          padding: 2px 8px;
+          padding: 4px 12px;
           border-radius: 9999px;
-          font-size: 11px;
-          font-weight: 500;
+          font-size: 12px;
+          font-weight: 600;
           color: white;
-          background: ${statusColors[reservoir.status]};
-        ">${reservoir.status}</span>
-        <span style="font-size: 11px; color: #6b7280;">${reservoir.type}</span>
+          background: ${color};
+          text-transform: capitalize;
+        ">${typeLabel}</span>
       </div>
-      <div style="font-size: 12px; color: #6b7280;">
-        <p style="margin: 2px 0;">Water Level: <span style="font-weight: 600; color: #1f2937;">${reservoir.currentWaterLevel}%</span></p>
-        <p style="margin: 2px 0;">Capacity: <span style="font-weight: 600; color: #1f2937;">${reservoir.storageCapacity} MCM</span></p>
+      <div style="font-size: 13px; color: #4b5563; margin-bottom: 12px; line-height: 1.6;">
+        <p style="margin: 4px 0;"><strong>ID:</strong> ${waterBody.id}</p>
+        <p style="margin: 4px 0;"><strong>Coordinates:</strong> ${waterBody.latitude.toFixed(4)}°N, ${waterBody.longitude.toFixed(4)}°E</p>
+      </div>
+      <div style="border-top: 1px solid #e5e7eb; padding-top: 12px; margin-top: 12px;">
+        <p style="font-size: 12px; color: #6b7280; line-height: 1.6; margin: 0;">${waterBody.description}</p>
       </div>
     </div>
   `;
 };
 
 interface MapViewProps {
-  activeFilter: ReservoirType | "All";
-  onReservoirClick: (reservoir: Reservoir) => void;
+  activeFilter: WaterBodyType | "All";
+  onWaterBodyClick: (waterBody: WaterBody) => void;
 }
 
-export const MapView = ({ activeFilter, onReservoirClick }: MapViewProps) => {
+export const MapView = ({ activeFilter, onWaterBodyClick }: MapViewProps) => {
   const [mapStyle, setMapStyle] = useState<"street" | "satellite">("street");
+  const [waterBodies, setWaterBodies] = useState<WaterBody[]>([]);
+  const [dataVersion, setDataVersion] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const mapRef = useRef<L.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const markersRef = useRef<L.Marker[]>([]);
@@ -103,12 +115,53 @@ export const MapView = ({ activeFilter, onReservoirClick }: MapViewProps) => {
   // Bhilwara district center
   const center: [number, number] = [25.4449, 74.6351];
 
-  const filteredReservoirs = useMemo(
-    () =>
-      reservoirs.filter(
-        (r) => activeFilter === "All" || r.type === activeFilter,
-      ),
-    [activeFilter],
+  // Manual refresh function
+  const refreshData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const data = await loadWaterBodies(true);
+      if (data.length > 0) {
+        setWaterBodies(data);
+        setDataVersion(prev => prev + 1);
+        console.log('🔄 Manually refreshed water bodies:', data.length);
+      }
+    } catch (error) {
+      console.error('Error refreshing water bodies:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Load water bodies data dynamically
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Always force reload to bypass cache
+        const data = await loadWaterBodies(true);
+        if (data.length > 0) {
+          setWaterBodies(data);
+          console.log('🔄 Updated water bodies:', data.length);
+        }
+      } catch (error) {
+        console.error('Error loading water bodies:', error);
+      }
+    };
+
+    // Initial load
+    fetchData();
+
+    // Poll for changes every 1 second to detect file changes
+    const interval = setInterval(() => {
+      fetchData();
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [dataVersion]);
+
+  // Automatically re-render when waterBodies data or filter changes
+  const filteredWaterBodies = useMemo(
+    () => getWaterBodiesByType(activeFilter, waterBodies),
+    [activeFilter, waterBodies],
   );
 
   // Initialize map
@@ -140,33 +193,53 @@ export const MapView = ({ activeFilter, onReservoirClick }: MapViewProps) => {
     tileLayerRef.current.setUrl(tileLayers[mapStyle].url);
   }, [mapStyle]);
 
-  // Update markers when filter changes
+  // Update markers when filter or data changes
   useEffect(() => {
     if (!mapRef.current) return;
 
     // Remove existing markers
-    markersRef.current.forEach((marker) => marker.remove());
+    markersRef.current.forEach((marker) => {
+      marker.remove();
+    });
     markersRef.current = [];
 
-    // Add new markers
-    filteredReservoirs.forEach((reservoir) => {
-      const coords = reservoir.coordinates as [number, number];
+    // Dynamically generate markers from coordinate.json data
+    // Ensure coordinates are parsed as numbers and in correct [lat, lng] order
+    filteredWaterBodies.forEach((waterBody) => {
+      // Parse coordinates as numbers (handle string inputs)
+      const lat = typeof waterBody.latitude === 'number' 
+        ? waterBody.latitude 
+        : parseFloat(String(waterBody.latitude));
+      const lng = typeof waterBody.longitude === 'number' 
+        ? waterBody.longitude 
+        : parseFloat(String(waterBody.longitude));
+
+      // Validate coordinates
+      if (isNaN(lat) || isNaN(lng)) {
+        console.warn(`Invalid coordinates for ${waterBody.name}: lat=${waterBody.latitude}, lng=${waterBody.longitude}`);
+        return;
+      }
+
+      // Leaflet uses [latitude, longitude] order
+      const coords: [number, number] = [lat, lng];
+
       const marker = L.marker(coords, {
-        icon: createCustomIcon(reservoir.status, reservoir.type),
+        icon: createCustomIcon(waterBody.type),
       });
 
-      marker.bindPopup(createPopupContent(reservoir), {
+      marker.bindPopup(createPopupContent(waterBody), {
         className: "custom-popup",
+        maxWidth: 300,
       });
 
       marker.on("click", () => {
-        onReservoirClick(reservoir);
+        onWaterBodyClick(waterBody);
       });
 
       marker.addTo(mapRef.current!);
       markersRef.current.push(marker);
     });
-  }, [filteredReservoirs, onReservoirClick]);
+  }, [filteredWaterBodies, onWaterBodyClick]);
 
   const handleZoomIn = useCallback(() => {
     mapRef.current?.zoomIn();
@@ -210,12 +283,32 @@ export const MapView = ({ activeFilter, onReservoirClick }: MapViewProps) => {
 
       {/* Legend */}
 
+      {/* Refresh Button */}
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.15 }}
+        className="absolute top-28 right-4 z-30"
+      >
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={refreshData}
+          disabled={isLoading}
+          className="glass-panel rounded-xl shadow-lg border border-border/50"
+          title="Refresh data from coordinate.json"
+        >
+          <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+          Refresh
+        </Button>
+      </motion.div>
+
       {/* Zoom Controls */}
       <motion.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.2 }}
-        className="absolute top-28 right-4 z-30 glass-panel rounded-xl shadow-lg border border-border/50 overflow-hidden"
+        className="absolute top-40 right-4 z-30 glass-panel rounded-xl shadow-lg border border-border/50 overflow-hidden"
       >
         <Button
           variant="ghost"
