@@ -20,7 +20,7 @@ const Index = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-background overflow-hidden">
+    <div className="flex flex-col min-h-svh bg-background overflow-hidden">
       <TopNav />
       
       <div className="flex flex-1 overflow-hidden">

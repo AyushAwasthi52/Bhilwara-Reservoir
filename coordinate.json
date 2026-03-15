@@ -1,99 +1,234 @@
 [
   {
-    "id": "meja-dam",
-    "name": "Meja Dam",
-    "type": "dam",
-    "latitude": 25.4256,
-    "longitude": 74.5821,
-    "description": "Major irrigation dam serving Bhilwara district. Constructed in 1968, this dam plays a crucial role in water management and agricultural irrigation for the region."
-  },
-  {
-    "id": "khari-dam",
-    "name": "Khari Dam",
-    "type": "dam",
-    "latitude": 25.5123,
-    "longitude": 74.7234,
-    "description": "Secondary irrigation reservoir built in 1975. This dam provides water for agricultural purposes and helps in maintaining the water table in the surrounding areas."
-  },
-  {
-    "id": "mandalgarh-lake",
-    "name": "Mandalgarh Lake",
-    "type": "lake",
-    "latitude": 25.4432,
-    "longitude": 75.0156,
-    "description": "Natural lake with historical significance. This beautiful water body has been a source of water for the local community for centuries and holds cultural importance in the region."
-  },
-  {
-    "id": "kotri-dam",
-    "name": "Kotri Dam",
-    "type": "dam",
-    "latitude": 25.1567,
-    "longitude": 74.8432,
-    "description": "Primary water supply dam for southern Bhilwara. Constructed in 1982, this dam is essential for providing drinking water and irrigation to the southern regions of the district."
-  },
-  {
-    "id": "sareri-check-dam",
-    "name": "Sareri Check Dam",
+    "id": "wb-1",
+    "name": "Water Body 1",
     "type": "pond",
-    "latitude": 25.6234,
-    "longitude": 74.6543,
-    "description": "Rainwater harvesting structure built in 2005. This check dam helps in water conservation and recharging groundwater levels in the area."
+    "latitude": 25.8,
+    "longitude": 74.1366476878212,
+    "description": "DN=1, type=Pond, area=100.06, perimeter=40.01, circularity=0.7854, rectangularity=1.0006."
   },
   {
-    "id": "badnor-lake",
-    "name": "Badnor Lake",
-    "type": "lake",
-    "latitude": 25.3678,
-    "longitude": 74.4521,
-    "description": "Seasonal lake with agricultural importance. This water body fills during monsoon season and provides water for farming activities in the surrounding agricultural lands."
-  },
-  {
-    "id": "raipur-dam",
-    "name": "Raipur Dam",
-    "type": "dam",
-    "latitude": 25.2845,
-    "longitude": 74.9876,
-    "description": "Medium irrigation project constructed in 1990. This dam supports local agriculture and helps in maintaining water availability throughout the year."
-  },
-  {
-    "id": "gangapur-check-dam",
-    "name": "Gangapur Check Dam",
+    "id": "wb-2",
+    "name": "Water Body 2",
     "type": "pond",
-    "latitude": 25.5567,
-    "longitude": 74.8123,
-    "description": "Small water harvesting structure built in 2010. This check dam is part of the water conservation efforts in the region and helps in groundwater recharge."
+    "latitude": 25.776327769347507,
+    "longitude": 74.1593112067769,
+    "description": "DN=1, type=Pond, area=100.06, perimeter=40.01, circularity=0.7854, rectangularity=1.0006."
   },
   {
-    "id": "jahazpur-reservoir",
-    "name": "Jahazpur Reservoir",
-    "type": "dam",
-    "latitude": 25.6123,
-    "longitude": 75.1234,
-    "description": "Eastern district water supply reservoir constructed in 1988. This reservoir is crucial for providing water to the eastern parts of Bhilwara district."
-  },
-  {
-    "id": "asind-lake",
-    "name": "Asind Lake of here",
+    "id": "wb-3",
+    "name": "Water Body 3",
     "type": "lake",
-    "latitude": 25.604748854851223,
-    "longitude": 74.3539911075349,
-    "description": "Major natural water body in northern region. This lake is an important source of water for both agricultural and domestic use in the northern areas of the district."
+    "latitude": 25.67139472352885,
+    "longitude": 74,
+    "description": "DN=1, type=Other, area=3802.12, perimeter=340.09, circularity=0.4131, rectangularity=0.5281."
   },
   {
-    "id": "banas-river",
-    "name": "Banas River",
-    "type": "river",
-    "latitude": 25.4449,
-    "longitude": 74.6351,
-    "description": "Major river flowing through Bhilwara district. The Banas River is a significant water source and plays a vital role in the region's ecosystem and water supply."
+    "id": "wb-4",
+    "name": "Water Body 4",
+    "type": "pond",
+    "latitude": 25.623773394031442,
+    "longitude": 74.31762255242333,
+    "description": "DN=1, type=Pond, area=200.12, perimeter=60.02, circularity=0.6981, rectangularity=1.0006."
   },
   {
-    "id": "berach-river",
-    "name": "Berach River",
+    "id": "wb-5",
+    "name": "Water Body 5",
+    "type": "pond",
+    "latitude": 25.52382397572092,
+    "longitude": 74.41760866546319,
+    "description": "DN=1, type=Pond, area=200.12, perimeter=60.02, circularity=0.6981, rectangularity=1.0006."
+  },
+  {
+    "id": "wb-6",
+    "name": "Water Body 6",
+    "type": "lake",
+    "latitude": 25.51330298431981,
+    "longitude": 74.42494098041944,
+    "description": "DN=1, type=Other, area=800.47, perimeter=180.05, circularity=0.3103, rectangularity=1.0006."
+  },
+  {
+    "id": "wb-7",
+    "name": "Water Body 7",
+    "type": "lake",
+    "latitude": 25.502781992918703,
+    "longitude": 74.43460630467989,
+    "description": "DN=1, type=Other, area=500.29, perimeter=120.04, circularity=0.4363, rectangularity=1.0006."
+  },
+  {
+    "id": "wb-8",
+    "name": "Water Body 8",
+    "type": "lake",
+    "latitude": 25.492261001517594,
+    "longitude": 74.44727121233169,
+    "description": "DN=1, type=Other, area=900.53, perimeter=200.06, circularity=0.2827, rectangularity=1.0006."
+  },
+  {
+    "id": "wb-9",
+    "name": "Water Body 9",
+    "type": "lake",
+    "latitude": 25.48174001011649,
+    "longitude": 74.45793639772259,
+    "description": "DN=1, type=Other, area=900.53, perimeter=200.06, circularity=0.2827, rectangularity=1.0006."
+  },
+  {
+    "id": "wb-10",
+    "name": "Water Body 10",
+    "type": "lake",
+    "latitude": 25.40283257460818,
+    "longitude": 74.53159283432862,
+    "description": "DN=1, type=Other, area=400.24, perimeter=100.03, circularity=0.5027, rectangularity=1.0006."
+  },
+  {
+    "id": "wb-11",
+    "name": "Water Body 11",
+    "type": "lake",
+    "latitude": 25.381790591805963,
+    "longitude": 74.55592278850158,
+    "description": "DN=1, type=Other, area=1100.66, perimeter=240.07, circularity=0.2400, rectangularity=1.0006."
+  },
+  {
+    "id": "wb-12",
+    "name": "Water Body 12",
+    "type": "pond",
+    "latitude": 25.37653009610541,
+    "longitude": 74.44127204554921,
+    "description": "DN=1, type=Pond, area=100.06, perimeter=40.01, circularity=0.7854, rectangularity=1.0006."
+  },
+  {
+    "id": "wb-13",
+    "name": "Water Body 13",
+    "type": "pond",
+    "latitude": 25.37389984825513,
+    "longitude": 74.44060547146236,
+    "description": "DN=1, type=Pond, area=100.06, perimeter=40.01, circularity=0.7854, rectangularity=1.0006."
+  },
+  {
+    "id": "wb-14",
+    "name": "Water Body 14",
+    "type": "pond",
+    "latitude": 25.360748609003746,
+    "longitude": 74.57458686293569,
+    "description": "DN=1, type=Pond, area=100.06, perimeter=40.01, circularity=0.7854, rectangularity=1.0006."
+  },
+  {
+    "id": "wb-15",
+    "name": "Water Body 15",
+    "type": "pond",
+    "latitude": 25.339706626201533,
+    "longitude": 74.59858353006526,
+    "description": "DN=1, type=Pond, area=100.06, perimeter=40.01, circularity=0.7854, rectangularity=1.0006."
+  },
+  {
+    "id": "wb-16",
+    "name": "Water Body 16",
     "type": "river",
-    "latitude": 25.5234,
-    "longitude": 74.7123,
-    "description": "Important tributary river in the region. The Berach River contributes to the water resources and supports various water bodies and irrigation systems in the area."
+    "latitude": 25.344090372616904,
+    "longitude": 74.42895211922323,
+    "description": "DN=1, type=Canal/River, area=11406.70, perimeter=980.29, circularity=0.1492, rectangularity=0.2001."
+  },
+  {
+    "id": "wb-17",
+    "name": "Water Body 17",
+    "type": "lake",
+    "latitude": 25.35607572186464,
+    "longitude": 74.45566720934151,
+    "description": "DN=1, type=Other, area=9405.54, perimeter=760.22, circularity=0.2045, rectangularity=0.3718."
+  },
+  {
+    "id": "wb-18",
+    "name": "Water Body 18",
+    "type": "lake",
+    "latitude": 25.31515764626386,
+    "longitude": 74.4501597000417,
+    "description": "DN=1, type=Other, area=300.18, perimeter=80.02, circularity=0.5890, rectangularity=0.7504."
+  },
+  {
+    "id": "wb-19",
+    "name": "Water Body 19",
+    "type": "lake",
+    "latitude": 25.239757207891007,
+    "longitude": 74.69257047632279,
+    "description": "DN=1, type=Other, area=300.18, perimeter=80.02, circularity=0.5890, rectangularity=1.0006."
+  },
+  {
+    "id": "wb-20",
+    "name": "Water Body 20",
+    "type": "lake",
+    "latitude": 25.239757207891007,
+    "longitude": 74.69723649493125,
+    "description": "DN=1, type=Other, area=700.42, perimeter=160.05, circularity=0.3436, rectangularity=1.0006."
+  },
+  {
+    "id": "wb-21",
+    "name": "Water Body 21",
+    "type": "lake",
+    "latitude": 25.197673242286577,
+    "longitude": 74.73989723649491,
+    "description": "DN=1, type=Other, area=700.43, perimeter=160.05, circularity=0.3436, rectangularity=1.0006."
+  },
+  {
+    "id": "wb-22",
+    "name": "Water Body 22",
+    "type": "lake",
+    "latitude": 25.12468386444139,
+    "longitude": 74.78772392723238,
+    "description": "DN=1, type=Other, area=400.24, perimeter=100.03, circularity=0.5027, rectangularity=0.6671."
+  },
+  {
+    "id": "wb-23",
+    "name": "Water Body 23",
+    "type": "pond",
+    "latitude": 25.08983308042522,
+    "longitude": 74.59325093736979,
+    "description": "DN=1, type=Pond, area=100.06, perimeter=40.01, circularity=0.7854, rectangularity=1.0006."
+  },
+  {
+    "id": "wb-24",
+    "name": "Water Body 24",
+    "type": "lake",
+    "latitude": 25.068133535660436,
+    "longitude": 74.78972364949317,
+    "description": "DN=1, type=Other, area=400.24, perimeter=100.03, circularity=0.5027, rectangularity=0.6671."
+  },
+  {
+    "id": "wb-25",
+    "name": "Water Body 25",
+    "type": "pond",
+    "latitude": 25.050379362671066,
+    "longitude": 74.78055825579786,
+    "description": "DN=1, type=Pond, area=100.06, perimeter=40.01, circularity=0.7854, rectangularity=1.0006."
+  },
+  {
+    "id": "wb-26",
+    "name": "Water Body 26",
+    "type": "pond",
+    "latitude": 25.010925644916913,
+    "longitude": 74.71990001388694,
+    "description": "DN=1, type=Pond, area=100.06, perimeter=40.01, circularity=0.7854, rectangularity=1.0006."
+  },
+  {
+    "id": "wb-27",
+    "name": "Water Body 27",
+    "type": "lake",
+    "latitude": 25.01136401955687,
+    "longitude": 74.8,
+    "description": "DN=1, type=Other, area=1200.74, perimeter=180.06, circularity=0.4654, rectangularity=0.6671."
+  },
+  {
+    "id": "wb-28",
+    "name": "Water Body 28",
+    "type": "lake",
+    "latitude": 25,
+    "longitude": 74.71631076880347,
+    "description": "DN=1, type=Other, area=1300.79, perimeter=220.07, circularity=0.3375, rectangularity=0.4336."
+  },
+  {
+    "id": "wb-29",
+    "name": "Water Body 29",
+    "type": "river",
+    "latitude": 25.020013436250622,
+    "longitude": 74.78457627359116,
+    "description": "DN=1, type=Canal/River, area=32319.76, perimeter=1440.44, circularity=0.1957, rectangularity=0.4617."
   }
 ]
-
