@@ -7,62 +7,75 @@ export interface WaterBody {
   latitude: number;
   longitude: number;
   description: string;
+  fid?: string;
+  area_m2?: number;
+  DN?: number;
 }
 
-// Parse and validate coordinates, ensuring they are numbers
-export const parseWaterBodies = (data: any[]): WaterBody[] => {
-  return data.map((item) => ({
-    ...item,
-    latitude: typeof item.latitude === 'number' ? item.latitude : parseFloat(String(item.latitude)),
-    longitude: typeof item.longitude === 'number' ? item.longitude : parseFloat(String(item.longitude)),
-  })).filter((item) => 
-    !isNaN(item.latitude) && 
-    !isNaN(item.longitude) &&
-    item.latitude >= -90 && item.latitude <= 90 &&
-    item.longitude >= -180 && item.longitude <= 180
-  );
+type WaterBodyShapesGeoJSON = {
+  type: "FeatureCollection";
+  features: Array<{
+    type: "Feature";
+    properties?: Record<string, unknown>;
+    geometry:
+      | { type: "Polygon"; coordinates: number[][][] }
+      | { type: "MultiPolygon"; coordinates: number[][][][] };
+  }>;
 };
 
-// Load coordinates dynamically to support hot reloading
-export const loadWaterBodies = async (forceReload = false): Promise<WaterBody[]> => {
-  const timestamp = Date.now();
-  
-  // PRIMARY: Fetch from public/coordinate.json (served directly by Vite)
-  // This is the file you should edit: public/coordinate.json
-  try {
-    const response = await fetch(`/coordinate.json?t=${timestamp}&_=${Date.now()}`, {
-      method: 'GET',
-      cache: 'no-store',
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
-        'Pragma': 'no-cache',
-        'Expires': '0',
-      },
-    });
-    
-    if (response.ok) {
-      const data = await response.json();
-      console.log('✅ Loaded from /coordinate.json (public folder):', data.length, 'items');
-      console.log('📝 Sample data:', data[0]?.name || 'No data');
-      return parseWaterBodies(Array.isArray(data) ? data : []);
-    } else {
-      console.warn('⚠️ Fetch failed with status:', response.status);
-    }
-  } catch (fetchError) {
-    console.warn('⚠️ Fetch from /coordinate.json failed:', fetchError);
-  }
+const toFiniteNumber = (v: unknown): number | null => {
+  const n = typeof v === "number" ? v : Number.parseFloat(String(v ?? ""));
+  return Number.isFinite(n) ? n : null;
+};
 
-  // FALLBACK: Try src/data/coordinate.json (if public fetch fails)
+export const loadWaterBodies = async (): Promise<WaterBody[]> => {
+  // Single source of truth: public/waterbodies.geojson
   try {
-    const module = await import(`./coordinate.json?t=${timestamp}&_=${Date.now()}`);
-    const data = module.default || module;
-    console.log('✅ Loaded from src/data/coordinate.json (fallback):', Array.isArray(data) ? data.length : 0, 'items');
-    return parseWaterBodies(Array.isArray(data) ? data : []);
-  } catch (importError) {
-    console.error('❌ All loading methods failed:', importError);
+    const res = await fetch(`/waterbodies.geojson?t=${Date.now()}`, { cache: "no-store" });
+    if (!res.ok) return [];
+    const data = (await res.json()) as WaterBodyShapesGeoJSON;
+
+    return (Array.isArray(data.features) ? data.features : [])
+      .map((f): WaterBody | null => {
+        const p = (f.properties ?? {}) as Record<string, unknown>;
+
+        const fid = p.fid != null ? String(p.fid) : undefined;
+        const id = p.id != null ? String(p.id) : fid ? `fid-${fid}` : "";
+        const name = p.name != null ? String(p.name) : fid ? `Water Body ${fid}` : "Water Body";
+
+        const latitude = toFiniteNumber(p.centroid_lat);
+        const longitude = toFiniteNumber(p.centroid_lng);
+        if (!id || latitude == null || longitude == null) return null;
+
+        const area_m2 = toFiniteNumber(p.area_m2) ?? undefined;
+        const DN = toFiniteNumber(p.DN) ?? undefined;
+
+        // We don't have a reliable type from the shapefile export; default to "lake"
+        const type: WaterBodyType = "lake";
+
+        const descriptionParts = [
+          fid ? `fid=${fid}` : null,
+          DN != null ? `DN=${DN}` : null,
+          area_m2 != null ? `area_m2=${area_m2}` : null,
+        ].filter(Boolean);
+
+        return {
+          id,
+          name,
+          type,
+          latitude,
+          longitude,
+          description: descriptionParts.length ? descriptionParts.join(", ") + "." : "Water body polygon.",
+          fid,
+          area_m2,
+          DN,
+        };
+      })
+      .filter((x): x is WaterBody => x !== null);
+  } catch (e) {
+    console.warn("⚠️ Failed to load /waterbodies.geojson:", e);
+    return [];
   }
-  
-  return [];
 };
 
 // No static import - always load dynamically to avoid caching

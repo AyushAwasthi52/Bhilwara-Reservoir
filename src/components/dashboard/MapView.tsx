@@ -6,6 +6,31 @@ import { Satellite, Map as MapIcon, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import "leaflet/dist/leaflet.css";
 
+type WaterBodyShapesGeoJSON = {
+  type: "FeatureCollection";
+  features: Array<{
+    type: "Feature";
+    properties?: Record<string, unknown>;
+    geometry:
+      | { type: "Polygon"; coordinates: number[][][] }
+      | { type: "MultiPolygon"; coordinates: number[][][][] };
+  }>;
+};
+
+type ShapeFeatureProps = {
+  fid?: string | number;
+  id?: string;
+  name?: string;
+  centroid_lat?: number;
+  centroid_lng?: number;
+};
+
+const getShapeProps = (feature?: GeoJSON.Feature): ShapeFeatureProps => {
+  const props = feature?.properties;
+  if (!props || typeof props !== "object") return {};
+  return props as ShapeFeatureProps;
+};
+
 // Custom marker icons based on type
 const createCustomIcon = (type: WaterBodyType) => {
   const typeColors = {
@@ -89,17 +114,20 @@ const createPopupContent = (waterBody: WaterBody) => {
 interface MapViewProps {
   activeFilter: WaterBodyType | "All";
   onWaterBodyClick: (waterBody: WaterBody) => void;
+  selectedWaterBodyId?: string | null;
 }
 
-export const MapView = ({ activeFilter, onWaterBodyClick }: MapViewProps) => {
+export const MapView = ({ activeFilter, onWaterBodyClick, selectedWaterBodyId }: MapViewProps) => {
   const [mapStyle, setMapStyle] = useState<"street" | "satellite">("street");
   const [waterBodies, setWaterBodies] = useState<WaterBody[]>([]);
-  const [dataVersion, setDataVersion] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [shapesData, setShapesData] = useState<WaterBodyShapesGeoJSON | null>(null);
+  const [selectedShapeFid, setSelectedShapeFid] = useState<string | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const markersRef = useRef<L.Marker[]>([]);
   const tileLayerRef = useRef<L.TileLayer | null>(null);
+  const shapesLayerRef = useRef<L.GeoJSON | null>(null);
 
   const tileLayers = {
     street: {
@@ -119,10 +147,9 @@ export const MapView = ({ activeFilter, onWaterBodyClick }: MapViewProps) => {
   const refreshData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await loadWaterBodies(true);
+      const data = await loadWaterBodies();
       if (data.length > 0) {
         setWaterBodies(data);
-        setDataVersion(prev => prev + 1);
         console.log('🔄 Manually refreshed water bodies:', data.length);
       }
     } catch (error) {
@@ -132,12 +159,11 @@ export const MapView = ({ activeFilter, onWaterBodyClick }: MapViewProps) => {
     }
   }, []);
 
-  // Load water bodies data dynamically
+  // Load water bodies data (from waterbodies.geojson only)
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Always force reload to bypass cache
-        const data = await loadWaterBodies(true);
+        const data = await loadWaterBodies();
         if (data.length > 0) {
           setWaterBodies(data);
           console.log('🔄 Updated water bodies:', data.length);
@@ -149,20 +175,32 @@ export const MapView = ({ activeFilter, onWaterBodyClick }: MapViewProps) => {
 
     // Initial load
     fetchData();
-
-    // Poll for changes every 1 second to detect file changes
-    const interval = setInterval(() => {
-      fetchData();
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [dataVersion]);
+  }, []);
 
   // Automatically re-render when waterBodies data or filter changes
   const filteredWaterBodies = useMemo(
     () => getWaterBodiesByType(activeFilter, waterBodies),
     [activeFilter, waterBodies],
   );
+
+  // Load shapes (polygons) once from public/waterbodies.geojson
+  useEffect(() => {
+    let cancelled = false;
+    const loadShapes = async () => {
+      try {
+        const res = await fetch(`/waterbodies.geojson?t=${Date.now()}`, { cache: "no-store" });
+        if (!res.ok) return;
+        const data = (await res.json()) as WaterBodyShapesGeoJSON;
+        if (!cancelled) setShapesData(data);
+      } catch (e) {
+        console.warn("Failed to load /waterbodies.geojson:", e);
+      }
+    };
+    loadShapes();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Initialize map
   useEffect(() => {
@@ -193,7 +231,7 @@ export const MapView = ({ activeFilter, onWaterBodyClick }: MapViewProps) => {
     tileLayerRef.current.setUrl(tileLayers[mapStyle].url);
   }, [mapStyle]);
 
-  // Update markers when filter or data changes
+  // Show marker icon ONLY for the currently selected water body
   useEffect(() => {
     if (!mapRef.current) return;
 
@@ -203,9 +241,11 @@ export const MapView = ({ activeFilter, onWaterBodyClick }: MapViewProps) => {
     });
     markersRef.current = [];
 
-    // Dynamically generate markers from coordinate.json data
-    // Ensure coordinates are parsed as numbers and in correct [lat, lng] order
-    filteredWaterBodies.forEach((waterBody) => {
+    if (!selectedWaterBodyId) return;
+
+    const waterBody = filteredWaterBodies.find((wb) => wb.id === selectedWaterBodyId);
+    if (!waterBody) return;
+
       // Parse coordinates as numbers (handle string inputs)
       const lat = typeof waterBody.latitude === 'number' 
         ? waterBody.latitude 
@@ -238,8 +278,85 @@ export const MapView = ({ activeFilter, onWaterBodyClick }: MapViewProps) => {
 
       marker.addTo(mapRef.current!);
       markersRef.current.push(marker);
+      marker.openPopup();
+  }, [filteredWaterBodies, onWaterBodyClick, selectedWaterBodyId]);
+
+  const waterBodyById = useMemo(() => {
+    const m = new Map<string, WaterBody>();
+    for (const wb of waterBodies) m.set(wb.id, wb);
+    return m;
+  }, [waterBodies]);
+
+  const styleShape = useCallback(
+    (feature?: GeoJSON.Feature) => {
+      const props = getShapeProps(feature);
+      const fid = String(props.fid ?? "");
+      const isSelected = selectedShapeFid != null && fid === selectedShapeFid;
+
+      return {
+        color: isSelected ? "#f59e0b" : "#0ea5e9",
+        weight: isSelected ? 3 : 2,
+        opacity: 0.9,
+        fillColor: isSelected ? "#f59e0b" : "#38bdf8",
+        fillOpacity: isSelected ? 0.25 : 0.12,
+      };
+    },
+    [activeFilter, selectedShapeFid, waterBodyById],
+  );
+
+  // Render polygon layer + wire clicks into the existing panel behavior
+  useEffect(() => {
+    if (!mapRef.current || !shapesData) return;
+
+    // Remove previous layer (if any)
+    if (shapesLayerRef.current) {
+      shapesLayerRef.current.remove();
+      shapesLayerRef.current = null;
+    }
+
+    const layer = L.geoJSON(shapesData as unknown as GeoJSON.GeoJsonObject, {
+      style: (feature) => styleShape(feature),
+      onEachFeature: (feature, l) => {
+        l.on("click", () => {
+          const props = getShapeProps(feature);
+          const fid = String(props.fid ?? "");
+          const idFromShape = props.id != null ? String(props.id) : fid ? `fid-${fid}` : "";
+          const wb = idFromShape ? waterBodyById.get(idFromShape) : undefined;
+
+          if (fid) setSelectedShapeFid(fid);
+          if (wb) onWaterBodyClick(wb);
+
+          const bounds = "getBounds" in l ? (l as unknown as L.Polygon).getBounds() : undefined;
+          if (bounds && mapRef.current) {
+            mapRef.current.fitBounds(bounds, { padding: [24, 24] });
+          }
+        });
+
+        l.on("mouseover", () => {
+          if ("setStyle" in l) {
+            (l as unknown as L.Path).setStyle({ weight: 3, fillOpacity: 0.2 });
+          }
+        });
+        l.on("mouseout", () => {
+          shapesLayerRef.current?.resetStyle(l);
+        });
+      },
     });
-  }, [filteredWaterBodies, onWaterBodyClick]);
+
+    layer.addTo(mapRef.current);
+    shapesLayerRef.current = layer;
+
+    return () => {
+      layer.remove();
+      if (shapesLayerRef.current === layer) shapesLayerRef.current = null;
+    };
+  }, [onWaterBodyClick, shapesData, styleShape, waterBodyById]);
+
+  // Re-style shapes when selection changes
+  useEffect(() => {
+    if (!shapesLayerRef.current) return;
+    shapesLayerRef.current.setStyle((feature) => styleShape(feature));
+  }, [styleShape]);
 
   const handleZoomIn = useCallback(() => {
     mapRef.current?.zoomIn();
@@ -296,7 +413,7 @@ export const MapView = ({ activeFilter, onWaterBodyClick }: MapViewProps) => {
           onClick={refreshData}
           disabled={isLoading}
           className="glass-panel rounded-xl shadow-lg border border-border/50"
-          title="Refresh data from coordinate.json"
+          title="Refresh data from waterbodies.geojson"
         >
           <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
           Refresh

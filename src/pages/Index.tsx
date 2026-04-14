@@ -32,7 +32,8 @@ const Index = () => {
         <main className="flex-1 relative">
           <MapView 
             activeFilter={activeFilter} 
-            onWaterBodyClick={handleWaterBodyClick} 
+            onWaterBodyClick={handleWaterBodyClick}
+            selectedWaterBodyId={isPanelOpen ? selectedWaterBody?.id ?? null : null}
           />
         </main>
       </div>
